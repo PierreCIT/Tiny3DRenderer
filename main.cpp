@@ -42,30 +42,56 @@ int main(int argc, char **argv) {
             screen_coords[j] = Vec2i((world_coords.x + 1.) * width / 2., (world_coords.y + 1.) * height / 2.);
         }
         fill_triangle(screen_coords[0], screen_coords[1], screen_coords[2],
-                                  image_wireframe_randomColordFilled,
-                                  TGAColor(rand()%254+1, rand()%254+1, rand()%254+1, 255));
+                      image_wireframe_randomColordFilled,
+                      TGAColor(rand() % 254 + 1, rand() % 254 + 1, rand() % 254 + 1, 255));
     }
     image_wireframe_randomColordFilled.flip_vertically();
     image_wireframe_randomColordFilled.write_tga_file("WireFrame_triangles_filled.tga");
+
+    TGAImage image_wireframe_light_intensity(width, height, TGAImage::RGB);
+    Vec3f light_dir(0, 0, -1);
+    for (int i = 0; i < model->nfaces(); i++) {
+        std::vector<int> face = model->face(i);
+        Vec2i screen_coords[3];
+        Vec3f worldCoordonate[3];
+        for (int j = 0; j < 3; j++) {
+            Vec3f world_coords = model->vert(face[j]);
+            screen_coords[j] = Vec2i((world_coords.x + 1.) * width / 2., (world_coords.y + 1.) * height / 2.);
+            worldCoordonate[j] = world_coords;
+        }
+        Vec3f face_normal = (worldCoordonate[2] - worldCoordonate[0])^(worldCoordonate[1] - worldCoordonate[0]);
+        face_normal.normalize();
+        int light_intensity = face_normal * light_dir *255;
+        if (light_intensity > 0) {
+            fill_triangle(screen_coords[0], screen_coords[1], screen_coords[2],
+                          image_wireframe_light_intensity,
+                          TGAColor(light_intensity, light_intensity, light_intensity, 255));
+        }
+    }
+    image_wireframe_light_intensity.flip_vertically();
+    image_wireframe_light_intensity.write_tga_file("WireFrame_light_intensity.tga");
+
     delete model;
 
-    TGAImage image_triangles(500, 500, TGAImage::RGB);
-    //Vec2i t0[3] = {Vec2i(10, 70), Vec2i(50, 160), Vec2i(70, 80)};
-    Vec2i t0[3] = {Vec2i(414, 348), Vec2i(429, 353), Vec2i(429, 345)};
-    Vec2i t1[3] = {Vec2i(180, 50), Vec2i(150, 1), Vec2i(70, 180)};
-    Vec2i t2[3] = {Vec2i(180, 150), Vec2i(120, 160), Vec2i(130, 180)};
-    triangle(t0[0], t0[1], t0[2], image_triangles, red);
-    triangle(t1[0], t1[1], t1[2], image_triangles, white);
-    triangle(t2[0], t2[1], t2[2], image_triangles, green);
-    image_triangles.flip_vertically();
-    image_triangles.write_tga_file("Triangles.tga");
-
-    TGAImage image_filled_triangles(500, 500, TGAImage::RGB);
-    fill_triangle(t0[0], t0[1], t0[2], image_filled_triangles, red);
-    fill_triangle(t1[0], t1[1], t1[2], image_filled_triangles, white);
-    fill_triangle(t2[0], t2[1], t2[2], image_filled_triangles, green);
-    image_filled_triangles.flip_vertically();
-    image_filled_triangles.write_tga_file("Triangles_filled.tga");
+// ---------------
+//    Triangle tests
+//    TGAImage image_triangles(500, 500, TGAImage::RGB);
+//    //Vec2i t0[3] = {Vec2i(10, 70), Vec2i(50, 160), Vec2i(70, 80)};
+//    Vec2i t0[3] = {Vec2i(414, 348), Vec2i(429, 353), Vec2i(429, 345)};
+//    Vec2i t1[3] = {Vec2i(180, 50), Vec2i(150, 1), Vec2i(70, 180)};
+//    Vec2i t2[3] = {Vec2i(180, 150), Vec2i(120, 160), Vec2i(130, 180)};
+//    triangle(t0[0], t0[1], t0[2], image_triangles, red);
+//    triangle(t1[0], t1[1], t1[2], image_triangles, white);
+//    triangle(t2[0], t2[1], t2[2], image_triangles, green);
+//    image_triangles.flip_vertically();
+//    image_triangles.write_tga_file("Triangles.tga");
+//
+//    TGAImage image_filled_triangles(500, 500, TGAImage::RGB);
+//    fill_triangle(t0[0], t0[1], t0[2], image_filled_triangles, red);
+//    fill_triangle(t1[0], t1[1], t1[2], image_filled_triangles, white);
+//    fill_triangle(t2[0], t2[1], t2[2], image_filled_triangles, green);
+//    image_filled_triangles.flip_vertically();
+//    image_filled_triangles.write_tga_file("Triangles_filled.tga");
 
     return 0;
 }
