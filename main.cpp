@@ -32,10 +32,26 @@ int main(int argc, char **argv) {
     }
     image_wireframe.flip_vertically();
     image_wireframe.write_tga_file("african_head_wireframe.tga");
+
+    TGAImage image_wireframe_randomColordFilled(width, height, TGAImage::RGB);
+    for (int i = 0; i < model->nfaces(); i++) {
+        std::vector<int> face = model->face(i);
+        Vec2i screen_coords[3];
+        for (int j = 0; j < 3; j++) {
+            Vec3f world_coords = model->vert(face[j]);
+            screen_coords[j] = Vec2i((world_coords.x + 1.) * width / 2., (world_coords.y + 1.) * height / 2.);
+        }
+        fill_triangle(screen_coords[0], screen_coords[1], screen_coords[2],
+                                  image_wireframe_randomColordFilled,
+                                  TGAColor(rand()%254+1, rand()%254+1, rand()%254+1, 255));
+    }
+    image_wireframe_randomColordFilled.flip_vertically();
+    image_wireframe_randomColordFilled.write_tga_file("WireFrame_triangles_filled.tga");
     delete model;
 
-    TGAImage image_triangles(200, 200, TGAImage::RGB);
-    Vec2i t0[3] = {Vec2i(10, 70), Vec2i(50, 160), Vec2i(70, 80)};
+    TGAImage image_triangles(500, 500, TGAImage::RGB);
+    //Vec2i t0[3] = {Vec2i(10, 70), Vec2i(50, 160), Vec2i(70, 80)};
+    Vec2i t0[3] = {Vec2i(414, 348), Vec2i(429, 353), Vec2i(429, 345)};
     Vec2i t1[3] = {Vec2i(180, 50), Vec2i(150, 1), Vec2i(70, 180)};
     Vec2i t2[3] = {Vec2i(180, 150), Vec2i(120, 160), Vec2i(130, 180)};
     triangle(t0[0], t0[1], t0[2], image_triangles, red);
@@ -44,13 +60,12 @@ int main(int argc, char **argv) {
     image_triangles.flip_vertically();
     image_triangles.write_tga_file("Triangles.tga");
 
-    TGAImage image_filled_triangles(200, 200, TGAImage::RGB);
+    TGAImage image_filled_triangles(500, 500, TGAImage::RGB);
     fill_triangle(t0[0], t0[1], t0[2], image_filled_triangles, red);
     fill_triangle(t1[0], t1[1], t1[2], image_filled_triangles, white);
     fill_triangle(t2[0], t2[1], t2[2], image_filled_triangles, green);
     image_filled_triangles.flip_vertically();
     image_filled_triangles.write_tga_file("Triangles_filled.tga");
-
 
     return 0;
 }
@@ -93,11 +108,11 @@ bool triangle(Vec2i t0, Vec2i t1, Vec2i t2, TGAImage &image, const TGAColor &col
 bool fill_triangle(Vec2i t0, Vec2i t1, Vec2i t2, TGAImage &image, const TGAColor &color) {
     if ((t0.y == t1.y && t0.y == t2.y) || (t0.x == t1.x && t0.x == t2.x)) return false; // we won't care for a line
     if (t0.y > t1.y) swap(t0, t1);
-    if (t0.y > t2.y) swap(t0, t1);
+    if (t0.y > t2.y) swap(t0, t2);
     if (t1.y > t2.y) swap(t1, t2);
     float slopeA = t2.x != t0.x ? (float) (t2.y - t0.y) / (float) (t2.x - t0.x) : 0; // t2.y != t0.y so never null
     int origin_point_A = t0.y - t0.x * slopeA;
-    for (int i = 0; i < t2.y - t0.y; i++) {
+    for (int i = 0; i <= t2.y - t0.y; i++) {
         bool second_half = i > t1.y - t0.y || t0.y == t1.y;
         Vec2i a = second_half ? t2 : t0;
         Vec2i b = t1;
