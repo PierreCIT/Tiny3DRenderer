@@ -1,0 +1,19 @@
+[project]
+name = "renderer"
+version = "0.0.0"
+requires-python = ">=3.13"
+description = "Tiny 3D renderer"
+readme = "README.md"
+license = {file = "LICENSE"}
+dynamic = ["dependencies"]
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+
+[tool.pytest.ini_options]
+pythonpath = [
+  "."
+]
+
+[project.urls]
+Repository = "https://github.com/PierreCIT/Tiny3DRenderer"
