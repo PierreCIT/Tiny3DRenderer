@@ -35,3 +35,7 @@
 # CLion own files
 cmake-build-debug/
 .idea/
+
+build/
+obj/
+.DS_STORE
