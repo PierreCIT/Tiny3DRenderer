@@ -31,6 +31,8 @@
 *.out
 *.app
 
+# VScode
+.vs/
 
 # CLion own files
 cmake-build-debug/
@@ -38,4 +40,10 @@ cmake-build-debug/
 
 build/
 obj/
+logs/
+**/__pycache__/
+*/tests/output/
 .DS_STORE
+.python-version
+
+*.egg-info

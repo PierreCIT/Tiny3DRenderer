@@ -1,0 +1,52 @@
+{
+  "models":
+  {
+    "african_head": "../obj/african_head/african_head.obj",
+    "monkey_head": "../obj/monkey_head.obj",
+    "ico_sphere": "../obj/ico_sphere.obj",
+    "dragon": "../obj/dragon.obj",
+    "sponza": "../obj/sponza.obj",
+    "cube_0.5": "../obj/Cube_50cm.obj",
+    "plane_2x2m": "../obj/plane_2x2m.obj"
+
+  },
+  "scenes":
+  [
+    {
+      "default": {
+        "objects": [
+          {
+            "name": "african_head",
+            "pose": "(0.25, 0.25, 0.25, 90, 180, 0)"
+          },
+          {
+            "name": "ico_sphere",
+            "pose": "(2, 2, 2, 0, 0, 0)"
+          },
+          {
+            "name": "cube_0.5",
+            "pose": "(0, -2, 0.25, 0, 0, 0)"
+          },
+          {
+            "name": "plane_2x2m",
+            "pose": "(0, 0, -2, 0, 0, 0)"
+          }
+        ],
+        "cameras": [
+          {
+            "name": "cam1",
+            "pose": "(8, -5, 2, -107, -53, -14)",
+            "res": "(1300, 800)"
+          },
+          {
+            "name": "static",
+            "pose": "(4, -3, 2, -107, -53, -14)",
+            "res": "(800, 800)"
+          }
+        ],
+        "active_camera": "cam1",
+        "render_mode": "FACES_NO_MAT"
+      }
+    }
+  ]
+}
