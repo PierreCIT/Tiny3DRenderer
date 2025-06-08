@@ -1,7 +1,7 @@
 from collections.abc import Callable
-from enum import StrEnum, auto
 from logging import getLogger
 
+import taichi as ti
 import numpy as np
 
 from .camera import Camera
@@ -21,11 +21,11 @@ AXES_VECTORS = np.array([[0, 0, 0, 1],
                          [0, -1, 0, 1],
                          [0, 0, -1, 1],], dtype=float)
 
-class RenderMode(StrEnum):
-    WIREFRAME = auto()
-    FACES_NO_LIGHT_RANDOM_COLORS = auto()
-    FACES_NO_MAT = auto()
-    FACES = auto()
+class RenderMode():
+    WIREFRAME = "WIREFRAME"
+    FACES_NO_LIGHT_RANDOM_COLORS = "FACES_NO_LIGHT_RANDOM_COLORS"
+    FACES_NO_MAT = "FACES_NO_MAT"
+    FACES = "FACES"
 
 
 class Renderer:
@@ -48,14 +48,19 @@ class Renderer:
     def draw(self) -> np.ndarray:
         if self.models is not None:
             drawing_func: Callable[[np.ndarray, np.ndarray, np.ndarray, Color, None | int], None] | None = None
-            if self.render_mode.value == RenderMode.WIREFRAME.value:
-                drawing_func = self.draw_wireframe
-            elif self.render_mode.value == RenderMode.NO_LIGHT_RANDOM_COLORS.value:
-                log.debug("Rendering No light rnd colors")
-                drawing_func = self.draw_faces_no_light_rnd_colors
-            elif self.render_mode.value == RenderMode.FACES.value:
-                drawing_func = self.draw_faces
-                log.debug("Rendering 'Faces'")
+            # if self.render_mode.value == RenderMode.WIREFRAME.value:
+            #     drawing_func = self.draw_wireframe
+            # elif self.render_mode.value == RenderMode.FACES_NO_LIGHT_RANDOM_COLORS.value:
+            #     log.debug("Rendering 'No light rnd colors'")
+            #     drawing_func = self.draw_faces_no_light_rnd_colors
+            # elif self.render_mode.value == RenderMode.FACES_NO_MAT.value:
+            #     drawing_func = self.draw_faces_no_mat
+            #     log.debug("Rendering 'Faces'")
+            # elif self.render_mode.value == RenderMode.FACES.value:
+            #     drawing_func = self.draw_faces
+            #     log.debug("Rendering 'Faces'")
+            drawing_func = self.draw_faces
+            log.debug("Rendering 'Faces'")
             if drawing_func is None:
                 log.error("No render_mode set")
             else:
@@ -195,7 +200,20 @@ class Renderer:
         lights_dir = np.asarray([l.dir for l in self.lights], dtype=np.float32)
         lights_color = np.asarray([l.color.to_array() for l in self.lights], dtype=np.uint8)
         colors = np.asarray([co.to_array() for co in colors], dtype=np.uint8)
-        self.image, self.zbuffer, self.instances_map = draw_triangle(self.image, self.zbuffer, self.instances_map, lights_dir, lights_color, a, b, c, colors, f_normal, idx)
+
+        l_dir = ti.Vector(lights_dir[0])
+        f_n = ti.Vector(f_normal)
+        draw_triangle(self.image,
+                                                                     self.zbuffer,
+                                                                     self.instances_map,
+                                                                     l_dir,
+                                                                     lights_color,
+                                                                     ti.math.vec3(a[0], a[1], a[2]),
+                                                                     ti.math.vec3(b[0], b[1], b[2]),
+                                                                     ti.math.vec3(c[0], c[1], c[2]),
+                                                                     colors,
+                                                                     f_n,
+                                                                     idx)
 
 
     def draw_object_axes(self, o_p: Pose) -> None:

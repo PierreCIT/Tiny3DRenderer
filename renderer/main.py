@@ -6,6 +6,7 @@ from pathlib import Path
 from time import monotonic_ns
 
 import pyglet as pg
+import taichi as ti
 from pyglet.window import mouse, key
 from rich.logging import RichHandler
 
@@ -163,6 +164,7 @@ if __name__ == "__main__":
                         help="Specifiy if the rendering will be done in an interactive window.")
 
     args = parser.parse_args()
+    ti.init(arch=ti.cpu)
     main(args.config, args.scene, args.interactive)
 
 

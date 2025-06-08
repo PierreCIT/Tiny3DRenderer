@@ -1,16 +1,17 @@
 from enum import Enum
 
+import taichi as ti
 import numpy as np
 from numba import jit
 
-@jit
-def interpolate_numpy(c_array: np.ndarray, w: np.ndarray, ignore_alpha: bool = True) -> np.ndarray:
+@ti.func
+def interpolate_numpy(c_array:ti.types.ndarray(dtype=ti.u8, ndim=2), w:ti.math.vec3, ignore_alpha: bool = True) :
     """Interpolate colors based on weights (must be same size)"""
     n_w = w / w.sum()
-    r = (n_w * c_array.T).T.sum(axis=0)
+    r = ti.Vector([c_array[0, 0], c_array[0, 1], c_array[0, 2], c_array[0, 3]])
     if ignore_alpha:
         r[3] = 255
-    return np.asarray([r[0], r[1], r[2], r[3]], dtype=np.uint8)
+    return r
 
 class Color:
     """RGBA colors in [0, 255]"""

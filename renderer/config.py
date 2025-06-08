@@ -45,7 +45,7 @@ class Config:
             if len(cameras) == 0:
                 cameras = {"default": Camera(name="default")}
             active_camera = self.scenes_conf[scene_name]["active_camera"] if "active_camera" in self.scenes_conf[scene_name] else list(cameras.keys())[0]
-            render_mode = RenderMode[self.scenes_conf[scene_name]["render_mode"]] if "render_mode" in self.scenes_conf[scene_name] else self.default_render_mode
+            render_mode = "FACES" #RenderMode[self.scenes_conf[scene_name]["render_mode"]] if "render_mode" in self.scenes_conf[scene_name] else self.default_render_mode
 
             self.scenes[scene_name] = Scene(models, cameras, active_camera, render_mode)
             self.scenes[scene_name].load()
